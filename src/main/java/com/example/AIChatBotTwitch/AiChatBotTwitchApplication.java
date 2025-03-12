@@ -15,39 +15,26 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+/*
+*
+* move what is inside CommandLineRunner to proper file
+* properly connect and call the IA generation method
+*
+*/
 @SpringBootApplication
 @Slf4j
 public class AiChatBotTwitchApplication {
 
 	private static final Logger log = LoggerFactory.getLogger(AiChatBotTwitchApplication.class);
+
 	@Value("${twitch.channel}")
 	private String channel;
 
 	@Value("${twitch.bot.username}")
 	private String botUsername;
 
-	@Value("${twitch.oauth.token}")
-	private String oauthToken;
-
-	@Value("${twitch.client.id}")
-	private String clientId;
-
-	@Value("${twitch.client.secret}")
-	private String clientSecret;
-
 	public static void main(String[] args) {
 		SpringApplication.run(AiChatBotTwitchApplication.class, args);
-	}
-
-	@Bean
-	public TwitchClient twitchClient() {
-
-        return TwitchClientBuilder.builder()
-                .withClientId(clientId)
-                .withClientSecret(clientSecret)
-                .withEnableChat(true)
-                .withChatAccount(new OAuth2Credential("twitch", oauthToken))
-                .build();
 	}
 
 	@Bean
@@ -66,8 +53,8 @@ public class AiChatBotTwitchApplication {
 					String userMessage = message.substring(botUsername.length() + 1).trim();
 					log.info("Received message from {}: {}", username, message);
 
-					//get an AI-generated response.
-					String aiResponse = chatService.getAIResponse(userMessage);
+					//get an AI-generated response
+					String aiResponse = ChatService.generateAiResponse(username, userMessage, botUsername);
 
 					//format the reply: mention the user and include the AI response.
 					String formattedResponse = String.format("@%s %s", event.getUser().getName(), aiResponse);
