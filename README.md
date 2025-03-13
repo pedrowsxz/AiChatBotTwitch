@@ -11,7 +11,12 @@ This project is a Twitch AI chatbot built with Spring Boot, Spring AI, and Twitc
 - **Java 17+** (Java 21 recommended)
 - **Maven or Gradle**
 - **Spring Boot** (version 3.x)
-- **Twitch Account** with a valid OAuth token, Client ID and Client Secret
+
+## Credentials
+- **Twitch Account** with a valid:
+  - **OAuth token**
+  - **Client ID**
+  - **Client Secret**
 - **OpenAI API Key**
 
 ## Installation & Setup

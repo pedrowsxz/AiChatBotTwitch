@@ -1,4 +1,4 @@
-package com.example.AIChatBotTwitch;
+package com.example.AIChatBotTwitch.config;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Bean;

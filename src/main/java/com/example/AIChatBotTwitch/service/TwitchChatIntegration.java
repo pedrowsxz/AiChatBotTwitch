@@ -1,25 +1,30 @@
-package com.example.AIChatBotTwitch;
+package com.example.AIChatBotTwitch.service;
 
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Slf4j
 public class TwitchChatIntegration implements CommandLineRunner {
 
+    // logger instantiation
     private static final Logger log = LoggerFactory.getLogger(TwitchChatIntegration.class);
 
+    // variables from application.properties
     @Value("${twitch.channel}")
     private String channel;
     @Value("${twitch.bot.username}")
     private String botUsername;
 
+    // dependency injection
     private final TwitchClient twitchClient;
     private final OpenAiIntegrationService openAiIntegrationService;
 
