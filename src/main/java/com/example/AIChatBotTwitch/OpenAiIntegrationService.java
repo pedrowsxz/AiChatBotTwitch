@@ -1,52 +1,52 @@
 package com.example.AIChatBotTwitch;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
-import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class ChatService {
+@Slf4j
+public class OpenAiIntegrationService {
 
-    //ChatClient injection
+    private static final Logger log = LoggerFactory.getLogger(OpenAiIntegrationService.class);
+
     private final ChatClient chatClient;
 
-    public ChatService(ChatClient chatClient) {
+    public OpenAiIntegrationService(ChatClient chatClient) {
         this.chatClient = chatClient;
     }
 
+    /**
+     * Generates an AI response based on user input from Twitch chat.
+     * @param username The Twitch username of the requester
+     * @param userMessage The message content from the user
+     * @param botUsername The bot's username
+     * @return AI-generated response formatted for Twitch chat
+     */
     public String generateAiResponse(String username, String userMessage, String botUsername) {
 
-        //Configure the OpenAI request with options
-        //Alternatively the options could be configured on application.properties file
-        //Other alternative would not to configure this at all and use the default one
-        OpenAiChatOptions options = OpenAiChatOptions.builder()
-                .model("gpt-3.5-turbo")
-                .temperature(0.7)
-                .maxTokens(100)
-                .build();
-
-        //Code for prompting, using PromptTemplate
+        //Prompt creation, using PromptTemplate
         //User Message
         String userText = """ 
-            The Twitch user {username} asks: {message}
+            The Twitch user {username} asks: {message}.
             """;
         PromptTemplate promptTemplate = new PromptTemplate(userText);
         Message userMessage2 = promptTemplate.createMessage(Map.of("username", username, "message", userMessage));
 
         //System Message
         String systemPrompt = """
-          You are a helpful AI assistant that helps people find information.
-          Your name is {name}
-          Keep responses concise (max 200 characters) and in a single paragraph.
+          You are a twitch chatbot that entertain users and answers their questions.
+          Your name is {name}.
+          Keep responses concise (max around 256 characters) and in a single paragraph.
           """;
         SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemPrompt);
         Message systemMessage = systemPromptTemplate.createMessage(Map.of("name", botUsername));
@@ -54,15 +54,14 @@ public class ChatService {
         //Prompt instantiation using userMessage and systemMessage
         Prompt prompt = new Prompt(List.of(userMessage2, systemMessage));
 
-        //get response from AI as a string
-        String response = chatClient.prompt(prompt)
-                .options(options)//system prompt here?*
-                .call()
-                .content();
-
-        return response;
+        //get response from AI model and return as a String
+        try {
+            return chatClient.prompt(prompt).call().content();
+        } catch (Exception e) {
+            log.error("Error generating AI response", e);
+            return "Sorry, I couldn't process your request at the moment.";
+        }
     }
-
 
     // *
     // * Alternative way for prompting and getting the response
@@ -87,6 +86,7 @@ public class ChatService {
     // //get response in string
     // String r = response.getResults().getFirst().getOutput().getText();
     // *
+
 }
 
 

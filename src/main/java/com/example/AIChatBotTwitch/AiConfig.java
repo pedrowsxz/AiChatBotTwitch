@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 public class AiConfig {
     @Bean
     ChatClient chatClient(ChatClient.Builder builder) {
-        return builder.defaultSystem("You are a helpful and entertaining Twitch chat assistant...") //system prompt here?*
-                .build();
+        return builder.build();
     }
 }
