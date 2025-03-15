@@ -11,19 +11,15 @@ import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 @Slf4j
-public class OpenAiIntegrationService {
-
-    private static final Logger log = LoggerFactory.getLogger(OpenAiIntegrationService.class);
+public class AiIntegrationService {
 
     private final ChatClient chatClient;
 
-    public OpenAiIntegrationService(ChatClient chatClient) {
-        this.chatClient = chatClient;
+    public AiIntegrationService(ChatClient.Builder chatClientBuilder) {
+        this.chatClient = chatClientBuilder.build();
     }
 
     /**
@@ -34,16 +30,15 @@ public class OpenAiIntegrationService {
      * @return AI-generated response formatted for Twitch chat
      */
     public String generateAiResponse(String username, String userMessage, String botUsername) {
-
-        //Prompt creation, using PromptTemplate
-        //User Message
+        //Prompt creation, using the PromptTemplate class
+        //creation of User Message
         String userText = """ 
             The Twitch user {username} asks: {message}.
             """;
         PromptTemplate promptTemplate = new PromptTemplate(userText);
         Message userMessage2 = promptTemplate.createMessage(Map.of("username", username, "message", userMessage));
 
-        //System Message
+        //creation of System Message
         String systemPrompt = """
           You are a twitch chatbot that entertain users and answers their questions.
           Your name is {name}.
@@ -52,10 +47,10 @@ public class OpenAiIntegrationService {
         SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemPrompt);
         Message systemMessage = systemPromptTemplate.createMessage(Map.of("name", botUsername));
 
-        //Prompt instantiation using userMessage and systemMessage
+        //create a Prompt object by passing a list containing the userMessage and systemMessage
         Prompt prompt = new Prompt(List.of(userMessage2, systemMessage));
 
-        //get response from AI model and return as a String
+        //get response from AI model and return it as a String
         try {
             return chatClient.prompt(prompt).call().content();
         } catch (Exception e) {
@@ -63,31 +58,6 @@ public class OpenAiIntegrationService {
             return "Sorry, I couldn't process your request at the moment.";
         }
     }
-
-    // *
-    // * Alternative way for prompting and getting the response
-    // *
-    // //prompting the AI and getting the response
-    // //system prompt
-    // String systemPrompt = "You are a helpful and entertaining Twitch chat assistant. " +
-    //         "Your name is " + botUsername + ". " +
-    //         "Keep responses concise (max 200 characters) and in a single paragraph. ";
-    //
-    // //create the user message including context about who is asking
-    // UserMessage userMessage = new UserMessage("The Twitch user '" + username + "' asks: " + message);
-    //
-    // //get response from OpenAI
-    // ChatResponse response = chatClient.prompt()
-    //         .user(userMessage.getText())
-    //         .system(systemPrompt)
-    //         .options(options)//system prompt here?*
-    //         .call()
-    //         .chatResponse(); // or .content() to get a String
-    //
-    // //get response in string
-    // String r = response.getResults().getFirst().getOutput().getText();
-    // *
-
 }
 
 

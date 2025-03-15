@@ -17,7 +17,12 @@ This project is a Twitch AI chatbot built with Spring Boot, Spring AI, and Twitc
   - **OAuth token**
   - **Client ID**
   - **Client Secret**
-- **OpenAI API Key**
+
+
+- **API Key for the LLM model you wish to use**
+  - To configure the LLM model in the application, specify the model in the application.properties file.
+  - Example Models: [OpenAI](https://docs.spring.io/spring-ai/reference/api/chat/openai-chat.html), [Mistral](https://docs.spring.io/spring-ai/reference/api/chat/mistralai-chat.html), [DeepSeek](https://docs.spring.io/spring-ai/reference/api/chat/deepseek-chat.html), [Ollama](https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html)
+  - For detailed instructions on how to configure and switch between each of these models and its options, refer to the [Spring AI documentation](https://docs.spring.io/spring-ai/reference/api/index.html).
 
 ## Installation & Setup
 1. **Clone the Repository:**
