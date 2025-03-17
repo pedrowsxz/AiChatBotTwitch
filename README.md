@@ -9,7 +9,7 @@ This project is a Twitch AI chatbot built with Spring Boot, Spring AI, and Twitc
 
 ## Prerequisites
 - **Java 17+** (Java 21 recommended)
-- **Maven or Gradle**
+- **Maven**
 - **Spring Boot** (version 3.x)
 
 ## Credentials
@@ -27,5 +27,15 @@ This project is a Twitch AI chatbot built with Spring Boot, Spring AI, and Twitc
 ## Installation & Setup
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/twitch-ai-chatbot.git
-   cd twitch-ai-chatbot
+    # Clone repository
+    git clone https://github.com/yourusername/twitch-ai-chatbot.git
+    cd twitch-ai-chatbot
+   
+    # Compile, clean any previous builds and packages the code into an executable .jar file
+    ./mvnw clean package
+    # Run the application
+    java -jar target/twitch-ai-chatbot-0.0.1-SNAPSHOT.jar
+   
+    # Alternatively, compile and run in one step, without creating a .jar file
+    mvn spring-boot:run
+   ```

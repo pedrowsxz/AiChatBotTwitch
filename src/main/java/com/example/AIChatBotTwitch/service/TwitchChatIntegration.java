@@ -13,13 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TwitchChatIntegration implements CommandLineRunner {
 
-    // variables from application.properties
+    //variables from application.properties
     @Value("${twitch.channel}")
     private String channel;
-    @Value("${twitch.bot.username}")
-    private String botUsername;
+    @Value("${twitch.bot.name}")
+    private String botName;
 
-    // dependency injection
+    //dependency injection
     private final TwitchClient twitchClient;
     private final AiIntegrationService aiIntegrationService;
 
@@ -30,30 +30,34 @@ public class TwitchChatIntegration implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //connect to twitch channel
-        twitchClient.getChat().joinChannel(channel);
-        log.info("Connected to channel: {}", channel);
+        try {
+            //connect to twitch channel
+            twitchClient.getChat().joinChannel(channel);
+            log.info("Connected to channel: {}", channel);
 
-        //register event listener for channel messages
-        twitchClient.getEventManager().onEvent((ChannelMessageEvent.class), event -> {
-            String message = event.getMessage();
-            String username = event.getUser().getName();
-            String botMention = "@" + botUsername.toLowerCase();
+            //register event listener for channel messages
+            twitchClient.getEventManager().onEvent((ChannelMessageEvent.class), event -> {
+                String message = event.getMessage();
+                String username = event.getUser().getName();
+                String botMention = "@" + botName;
 
-            //check if message mentioned the bot
-            if (message.startsWith("@" + botUsername)) {
-                String userMessage = message.substring(botMention.length()).trim();
-                log.info("Received message from {}: {}", username, message);
+                //check if message mentioned the bot
+                if (message.toLowerCase().startsWith(botMention.toLowerCase())) {
+                    String userMessage = message.substring(botMention.length()).trim();
+                    log.info("Received message from {}: {}", username, message);
 
-                //get an AI-generated response
-                String aiResponse = aiIntegrationService.generateAiResponse(username, userMessage, botUsername);
+                    //get an AI-generated response
+                    String aiResponse = aiIntegrationService.generateAiResponse(username, userMessage, botName);
 
-                //format the reply: mention the user and include the AI response.
-                String formattedResponse = String.format("@%s %s", event.getUser().getName(), aiResponse);
+                    //format the reply: mention the user and include the AI response.
+                    String formattedResponse = String.format("@%s %s", event.getUser().getName(), aiResponse);
 
-                //send the response to the Twitch chat.
-                twitchClient.getChat().sendMessage(channel, formattedResponse);
-            }
-        });
+                    //send the response to the Twitch chat.
+                    twitchClient.getChat().sendMessage(channel, formattedResponse);
+                }
+            });
+        } catch (Exception e) {
+            log.error("Unexpected error in Twitch bot", e);;
+        }
     }
 }
